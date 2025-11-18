@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: indmoney-faq-api
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn api:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: GEMINI_API_KEY
+        value: AIzaSyC7gg3AfshflqtVlitDYAZCWy8Mtp9xHmI
+
+  - type: web
+    name: indmoney-faq-app
+    runtime: static
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublishPath: ../dist
+    envVars:
+      - key: NODE_VERSION
+        value: 18
