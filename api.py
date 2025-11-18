@@ -8,9 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
 from data_storage import DataStorage
-from gemini_service import GeminiService
 import sqlite3
-import json
 import os
 from dotenv import load_dotenv
 
@@ -32,10 +30,18 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Initialize storage and Gemini
+# Initialize storage
 storage = DataStorage()
-gemini = GeminiService()
 
+# Check if Gemini is available (for Vercel deployment)
+try:
+    from gemini_service_minimal import GeminiService
+    gemini = GeminiService()
+    RAG_AVAILABLE = True
+except ImportError:
+    gemini = None
+    RAG_AVAILABLE = False
+    print("Warning: Gemini service not available. RAG features will be disabled.")
 
 # Pydantic models
 class Fund(BaseModel):
@@ -80,18 +86,15 @@ def read_root():
     return {
         "message": "INDMoney FAQ Assistant API",
         "version": "1.0.0",
-        "gemini_enabled": gemini.enabled,
+        "gemini_enabled": gemini.enabled if gemini else False,
+        "rag_available": RAG_AVAILABLE,
         "endpoints": {
             "funds": "/api/funds",
             "fund_detail": "/api/funds/{fund_id}",
             "search": "/api/search",
             "faq": "/api/faq",
             "compare": "/api/compare",
-            "stats": "/api/stats",
-            "ai_ask": "/api/ai/ask (POST)",
-            "ai_compare": "/api/ai/compare",
-            "ai_advice": "/api/ai/advice (POST)",
-            "ai_explain": "/api/ai/explain"
+            "stats": "/api/stats"
         },
         "documentation": {
             "swagger": "/docs",
@@ -333,65 +336,77 @@ def get_stats():
             "total_faqs": total_faqs,
             "categories": categories,
             "database": storage.db_path,
-            "gemini_enabled": gemini.enabled
+            "gemini_enabled": gemini.enabled if gemini else False
         }
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
-# ============ Gemini AI Endpoints ============
-
-@app.post("/api/ai/ask")
-def ai_ask_question(request: AskQuestion):
-    """Ask a question and get AI-powered answer using Gemini"""
-    try:
-        result = gemini.answer_question(
-            question=request.question,
-            use_context=request.use_context
-        )
-        return result
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-
-@app.get("/api/ai/compare")
-def ai_compare_funds(funds: str = Query(..., description="Comma-separated fund names")):
-    """Compare funds using AI analysis"""
-    try:
-        fund_list = [f.strip() for f in funds.split(',')]
-        result = gemini.compare_funds(fund_list)
-        return result
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+# ============ Gemini AI Endpoints (Only if RAG is available) ============
+if RAG_AVAILABLE:
+    @app.post("/api/ai/ask")
+    def ai_ask_question(request: AskQuestion):
+        """Ask a question and get AI-powered answer using Gemini"""
+        if not gemini or not gemini.enabled:
+            raise HTTPException(status_code=503, detail="AI service not available")
+            
+        try:
+            result = gemini.answer_question(
+                question=request.question,
+                use_context=request.use_context
+            )
+            return result
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.post("/api/ai/advice")
-def ai_investment_advice(profile: InvestmentProfile):
-    """Get personalized investment advice using AI"""
-    try:
-        result = gemini.get_investment_advice(
-            amount=profile.amount,
-            risk_appetite=profile.risk_appetite,
-            duration=profile.duration
-        )
-        return result
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    @app.get("/api/ai/compare")
+    def ai_compare_funds(funds: str = Query(..., description="Comma-separated fund names")):
+        """Compare funds using AI analysis"""
+        if not gemini or not gemini.enabled:
+            raise HTTPException(status_code=503, detail="AI service not available")
+            
+        try:
+            fund_list = [f.strip() for f in funds.split(',')]
+            result = gemini.compare_funds(fund_list)
+            return result
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.get("/api/ai/explain")
-def ai_explain_term(term: str = Query(..., description="Term to explain")):
-    """Explain a mutual fund term using AI"""
-    try:
-        result = gemini.explain_term(term)
-        return result
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    @app.post("/api/ai/advice")
+    def ai_investment_advice(profile: InvestmentProfile):
+        """Get personalized investment advice using AI"""
+        if not gemini or not gemini.enabled:
+            raise HTTPException(status_code=503, detail="AI service not available")
+            
+        try:
+            result = gemini.get_investment_advice(
+                amount=profile.amount,
+                risk_appetite=profile.risk_appetite,
+                duration=profile.duration
+            )
+            return result
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=str(e))
 
 
-if __name__ == "__main__":
-    import uvicorn
-    print("Starting INDMoney FAQ Assistant API...")
-    print("API Documentation: http://localhost:8000/docs")
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    @app.get("/api/ai/explain")
+    def ai_explain_term(term: str = Query(..., description="Term to explain")):
+        """Explain a mutual fund term using AI"""
+        if not gemini or not gemini.enabled:
+            raise HTTPException(status_code=503, detail="AI service not available")
+            
+        try:
+            result = gemini.explain_term(term)
+            return result
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=str(e))
+
+
+# For Vercel deployment
+@app.get("/{full_path:path}")
+async def serve_frontend(full_path: str):
+    """Serve frontend files"""
+    return {"message": "INDMoney FAQ Assistant API"}

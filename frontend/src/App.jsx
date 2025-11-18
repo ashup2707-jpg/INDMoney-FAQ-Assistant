@@ -8,10 +8,34 @@ function App() {
   const [loading, setLoading] = useState(false)
   const [funds, setFunds] = useState([])
   const [selectedTab, setSelectedTab] = useState('chat')
+  const [apiInfo, setApiInfo] = useState(null)
+  const [error, setError] = useState(null)
   const messagesEndRef = useRef(null)
 
+  // Fetch initial data
   useEffect(() => {
-    fetchFunds()
+    const initializeApp = async () => {
+      try {
+        // Fetch API info
+        const response = await fetch('/api');
+        const data = await response.json();
+        
+        setApiInfo(data);
+        
+        // Fetch funds
+        const fundsResponse = await fetch('/api/funds?limit=100');
+        const fundsData = await fundsResponse.json();
+        setFunds(fundsData);
+      } catch (err) {
+        console.error('Initialization error:', err);
+        setError('Failed to initialize the application. Please refresh the page.');
+      }
+    };
+
+    initializeApp();
+  }, []);
+
+  useEffect(() => {
     setMessages([
       {
         type: 'bot',
@@ -29,15 +53,6 @@ function App() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }
 
-  const fetchFunds = async () => {
-    try {
-      const response = await axios.get('/api/funds')
-      setFunds(response.data)
-    } catch (error) {
-      console.error('Error fetching funds:', error)
-    }
-  }
-
   const sendMessage = async (e) => {
     e.preventDefault()
     if (!input.trim() || loading) return
@@ -53,24 +68,58 @@ function App() {
     setLoading(true)
 
     try {
-      const response = await axios.post('/api/ai/ask', {
-        question: input,
-        use_context: true
-      })
+      // Check if AI is available
+      const aiAvailable = apiInfo?.gemini_enabled && apiInfo?.rag_available;
+      
+      if (aiAvailable) {
+        // Use AI endpoint
+        const response = await axios.post('/api/ai/ask', {
+          question: input,
+          use_context: true
+        })
 
-      const botMessage = {
-        type: 'bot',
-        content: response.data.answer,
-        source: response.data.source,
-        fund_sources: response.data.fund_sources || [],
-        timestamp: new Date()
+        const botMessage = {
+          type: 'bot',
+          content: response.data.answer,
+          source: response.data.source,
+          fund_sources: response.data.fund_sources || [],
+          timestamp: new Date()
+        }
+
+        setMessages(prev => [...prev, botMessage])
+      } else {
+        // Fallback to simple FAQ search
+        const response = await fetch(`/api/faq?q=${encodeURIComponent(input)}&limit=3`);
+        
+        if (!response.ok) {
+          throw new Error(`Failed to search FAQs: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        let botMessage;
+        if (data.length > 0) {
+          // Format the FAQ responses
+          const answer = data.map(faq => `Q: ${faq.question}\nA: ${faq.answer}`).join('\n\n');
+          botMessage = {
+            type: 'bot',
+            content: answer,
+            timestamp: new Date()
+          };
+        } else {
+          botMessage = {
+            type: 'bot',
+            content: "I couldn't find any relevant information for your question. Please try rephrasing or ask something else.",
+            timestamp: new Date()
+          };
+        }
+
+        setMessages(prev => [...prev, botMessage]);
       }
-
-      setMessages(prev => [...prev, botMessage])
     } catch (error) {
       const errorMessage = {
         type: 'bot',
-        content: 'Sorry, I encountered an error. Please make sure the backend API is running and Gemini API key is configured.',
+        content: `Sorry, I encountered an error: ${error.message || 'Unknown error'}. Please try again.`,
         timestamp: new Date(),
         isError: true
       }
@@ -208,15 +257,15 @@ function App() {
                   <div className="fund-details">
                     <div className="fund-detail">
                       <span className="label">Manager:</span>
-                      <span className="value">{fund.fund_manager}</span>
+                      <span className="value">{fund.fund_manager || 'N/A'}</span>
                     </div>
                     <div className="fund-detail">
                       <span className="label">Expense Ratio:</span>
-                      <span className="value">{fund.expense_ratio}</span>
+                      <span className="value">{fund.expense_ratio || 'N/A'}</span>
                     </div>
                     <div className="fund-detail">
                       <span className="label">Risk:</span>
-                      <span className="value risk">{fund.riskometer}</span>
+                      <span className="value risk">{fund.riskometer || 'N/A'}</span>
                     </div>
                   </div>
                   <div className="returns">
