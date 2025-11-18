@@ -1,0 +1,64 @@
+{
+  "source_url": "https://www.moneycontrol.com/mutual-funds/nav/hdfc-small-cap-fund-direct-plan/MMS025",
+  "fund_name": "HDFC Small Cap Fund - Direct Plan - Growth",
+  "expense_ratio": "0.85%",
+  "exit_load": "1% if redeemed within 1 year",
+  "minimum_investment": {
+    "SIP": "₹500",
+    "Lumpsum": "₹5000"
+  },
+  "returns": {
+    "1Y": "35.2%",
+    "3Y": "28.9%",
+    "5Y": "25.4%"
+  },
+  "holdings": [
+    {
+      "name": "Dixon Technologies",
+      "allocation": "2.1%",
+      "sector": "Electronics"
+    },
+    {
+      "name": "Kalyan Jewellers",
+      "allocation": "1.9%",
+      "sector": "Retail"
+    },
+    {
+      "name": "PB Fintech",
+      "allocation": "1.7%",
+      "sector": "Financial Services"
+    },
+    {
+      "name": "Zomato Ltd",
+      "allocation": "1.6%",
+      "sector": "Consumer Services"
+    },
+    {
+      "name": "Delhivery Ltd",
+      "allocation": "1.5%",
+      "sector": "Logistics"
+    }
+  ],
+  "fund_manager": "Chirag Setalvad",
+  "benchmark": "Nifty Smallcap 250 TRI",
+  "riskometer": "Very High",
+  "lock_in": null,
+  "peer_comparison": null,
+  "faqs": [
+    {
+      "question": "What is the risk level of this fund?",
+      "answer": "This fund has a Very High risk rating as it invests in small-cap companies."
+    },
+    {
+      "question": "Who should invest in this fund?",
+      "answer": "Investors with high risk appetite and 7+ year investment horizon."
+    }
+  ],
+  "table_data": {
+    "NAV": "₹234.67",
+    "AUM": "₹28,456 Cr",
+    "Fund Age": "10 years",
+    "Category": "Small Cap Fund"
+  },
+  "scraped_at": "2025-11-18 00:31:27"
+}

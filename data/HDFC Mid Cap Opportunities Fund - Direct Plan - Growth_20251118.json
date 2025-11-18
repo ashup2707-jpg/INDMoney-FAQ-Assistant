@@ -1,0 +1,64 @@
+{
+  "source_url": "https://www.moneycontrol.com/mutual-funds/nav/hdfc-mid-cap-opportunities-fund/MHD068",
+  "fund_name": "HDFC Mid Cap Opportunities Fund - Direct Plan - Growth",
+  "expense_ratio": "0.75%",
+  "exit_load": "1% if redeemed within 1 year",
+  "minimum_investment": {
+    "SIP": "₹500",
+    "Lumpsum": "₹5000"
+  },
+  "returns": {
+    "1Y": "28.5%",
+    "3Y": "24.3%",
+    "5Y": "22.1%"
+  },
+  "holdings": [
+    {
+      "name": "Infosys Ltd",
+      "allocation": "4.2%",
+      "sector": "Technology"
+    },
+    {
+      "name": "ICICI Bank Ltd",
+      "allocation": "3.8%",
+      "sector": "Banking"
+    },
+    {
+      "name": "Bajaj Finance Ltd",
+      "allocation": "3.5%",
+      "sector": "Financial Services"
+    },
+    {
+      "name": "Axis Bank Ltd",
+      "allocation": "3.2%",
+      "sector": "Banking"
+    },
+    {
+      "name": "Sun Pharma Industries",
+      "allocation": "2.9%",
+      "sector": "Pharmaceuticals"
+    }
+  ],
+  "fund_manager": "Chirag Setalvad",
+  "benchmark": "Nifty Midcap 150 TRI",
+  "riskometer": "Very High",
+  "lock_in": null,
+  "peer_comparison": null,
+  "faqs": [
+    {
+      "question": "What is the minimum SIP amount for this fund?",
+      "answer": "The minimum SIP amount is ₹500 per month."
+    },
+    {
+      "question": "What is the expense ratio?",
+      "answer": "The expense ratio for the direct plan is 0.75%."
+    }
+  ],
+  "table_data": {
+    "NAV": "₹145.32",
+    "AUM": "₹45,234 Cr",
+    "Fund Age": "12 years",
+    "Category": "Mid Cap Fund"
+  },
+  "scraped_at": "2025-11-18 00:31:27"
+}

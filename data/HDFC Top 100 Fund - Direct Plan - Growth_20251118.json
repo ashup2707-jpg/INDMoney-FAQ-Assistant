@@ -1,0 +1,64 @@
+{
+  "source_url": "https://www.moneycontrol.com/mutual-funds/nav/hdfc-large-cap-fund-growth/MZU009",
+  "fund_name": "HDFC Top 100 Fund - Direct Plan - Growth",
+  "expense_ratio": "0.65%",
+  "exit_load": "1% if redeemed within 1 year",
+  "minimum_investment": {
+    "SIP": "₹500",
+    "Lumpsum": "₹5000"
+  },
+  "returns": {
+    "1Y": "22.3%",
+    "3Y": "18.7%",
+    "5Y": "16.5%"
+  },
+  "holdings": [
+    {
+      "name": "Reliance Industries",
+      "allocation": "8.5%",
+      "sector": "Energy"
+    },
+    {
+      "name": "HDFC Bank",
+      "allocation": "7.2%",
+      "sector": "Banking"
+    },
+    {
+      "name": "Infosys Ltd",
+      "allocation": "6.1%",
+      "sector": "Technology"
+    },
+    {
+      "name": "TCS Ltd",
+      "allocation": "5.8%",
+      "sector": "Technology"
+    },
+    {
+      "name": "ITC Ltd",
+      "allocation": "4.9%",
+      "sector": "FMCG"
+    }
+  ],
+  "fund_manager": "Rakesh Vyas",
+  "benchmark": "Nifty 100 TRI",
+  "riskometer": "Moderately High",
+  "lock_in": null,
+  "peer_comparison": null,
+  "faqs": [
+    {
+      "question": "What type of companies does this fund invest in?",
+      "answer": "This fund primarily invests in large-cap companies from the Nifty 100 index."
+    },
+    {
+      "question": "Is this suitable for long-term investment?",
+      "answer": "Yes, this is ideal for investors with a 5+ year investment horizon."
+    }
+  ],
+  "table_data": {
+    "NAV": "₹892.45",
+    "AUM": "₹67,891 Cr",
+    "Fund Age": "15 years",
+    "Category": "Large Cap Fund"
+  },
+  "scraped_at": "2025-11-18 00:31:27"
+}
