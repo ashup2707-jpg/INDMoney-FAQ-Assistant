@@ -61,7 +61,30 @@ frontend/build/
 frontend/package-lock.json
 frontend/yarn.lock
 
+# Large data files (exclude from git)
+data/*.json
+!data/sample_data_summary.json
+
 # Test files
 test_results.json
 scraped_summary.json
 sample_data_summary.json
+
+# Cache and temporary files
+*.cache
+*.tmp
+.tmp/
+
+# System files
+.DS_Store?
+.Trashes
+ehthumbs_vista.db
+
+# Backup files
+*.bak
+*.backup
+
+# Ignore SQLite journal files
+*.db-journal
+*.db-shm
+*.db-wal
