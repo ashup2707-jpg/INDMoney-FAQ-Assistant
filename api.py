@@ -33,15 +33,14 @@ app.add_middleware(
 # Initialize storage
 storage = DataStorage()
 
-# Check if Gemini is available (for Vercel deployment)
+# Simple flag to indicate if advanced features are available
+AI_AVAILABLE = False
 try:
-    from gemini_service_minimal import GeminiService
-    gemini = GeminiService()
-    RAG_AVAILABLE = True
+    import google.generativeai as genai
+    AI_AVAILABLE = True
 except ImportError:
-    gemini = None
-    RAG_AVAILABLE = False
-    print("Warning: Gemini service not available. RAG features will be disabled.")
+    AI_AVAILABLE = False
+    print("Warning: Google Generative AI not available. AI features will be disabled.")
 
 # Pydantic models
 class Fund(BaseModel):
@@ -86,8 +85,7 @@ def read_root():
     return {
         "message": "INDMoney FAQ Assistant API",
         "version": "1.0.0",
-        "gemini_enabled": gemini.enabled if gemini else False,
-        "rag_available": RAG_AVAILABLE,
+        "ai_available": AI_AVAILABLE,
         "endpoints": {
             "funds": "/api/funds",
             "fund_detail": "/api/funds/{fund_id}",
@@ -336,77 +334,31 @@ def get_stats():
             "total_faqs": total_faqs,
             "categories": categories,
             "database": storage.db_path,
-            "gemini_enabled": gemini.enabled if gemini else False
+            "ai_available": AI_AVAILABLE
         }
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
-# ============ Gemini AI Endpoints (Only if RAG is available) ============
-if RAG_AVAILABLE:
+# ============ AI Endpoints (Only if AI is available) ============
+if AI_AVAILABLE:
     @app.post("/api/ai/ask")
     def ai_ask_question(request: AskQuestion):
-        """Ask a question and get AI-powered answer using Gemini"""
-        if not gemini or not gemini.enabled:
-            raise HTTPException(status_code=503, detail="AI service not available")
-            
-        try:
-            result = gemini.answer_question(
-                question=request.question,
-                use_context=request.use_context
-            )
-            return result
-        except Exception as e:
-            raise HTTPException(status_code=500, detail=str(e))
-
-
+        """Ask a question and get AI-powered answer"""
+        return {"answer": "AI features are not available in this deployment", "source": "none"}
+    
     @app.get("/api/ai/compare")
     def ai_compare_funds(funds: str = Query(..., description="Comma-separated fund names")):
         """Compare funds using AI analysis"""
-        if not gemini or not gemini.enabled:
-            raise HTTPException(status_code=503, detail="AI service not available")
-            
-        try:
-            fund_list = [f.strip() for f in funds.split(',')]
-            result = gemini.compare_funds(fund_list)
-            return result
-        except Exception as e:
-            raise HTTPException(status_code=500, detail=str(e))
-
-
+        return {"comparison": "AI features are not available in this deployment", "source": "none"}
+    
     @app.post("/api/ai/advice")
     def ai_investment_advice(profile: InvestmentProfile):
         """Get personalized investment advice using AI"""
-        if not gemini or not gemini.enabled:
-            raise HTTPException(status_code=503, detail="AI service not available")
-            
-        try:
-            result = gemini.get_investment_advice(
-                amount=profile.amount,
-                risk_appetite=profile.risk_appetite,
-                duration=profile.duration
-            )
-            return result
-        except Exception as e:
-            raise HTTPException(status_code=500, detail=str(e))
-
-
+        return {"advice": "AI features are not available in this deployment", "source": "none"}
+    
     @app.get("/api/ai/explain")
     def ai_explain_term(term: str = Query(..., description="Term to explain")):
         """Explain a mutual fund term using AI"""
-        if not gemini or not gemini.enabled:
-            raise HTTPException(status_code=503, detail="AI service not available")
-            
-        try:
-            result = gemini.explain_term(term)
-            return result
-        except Exception as e:
-            raise HTTPException(status_code=500, detail=str(e))
-
-
-# For Vercel deployment
-@app.get("/{full_path:path}")
-async def serve_frontend(full_path: str):
-    """Serve frontend files"""
-    return {"message": "INDMoney FAQ Assistant API"}
+        return {"explanation": "AI features are not available in this deployment", "source": "none"}

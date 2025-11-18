@@ -39,7 +39,7 @@ function App() {
     setMessages([
       {
         type: 'bot',
-        content: 'Hello! 👋 I\'m your INDMoney FAQ Assistant. Ask me anything about HDFC mutual funds, investment advice, or fund comparisons!',
+        content: 'Hello! 👋 I\'m your INDMoney FAQ Assistant. Ask me anything about HDFC mutual funds!',
         timestamp: new Date()
       }
     ])
@@ -69,7 +69,7 @@ function App() {
 
     try {
       // Check if AI is available
-      const aiAvailable = apiInfo?.gemini_enabled && apiInfo?.rag_available;
+      const aiAvailable = apiInfo?.ai_available;
       
       if (aiAvailable) {
         // Use AI endpoint
@@ -82,7 +82,6 @@ function App() {
           type: 'bot',
           content: response.data.answer,
           source: response.data.source,
-          fund_sources: response.data.fund_sources || [],
           timestamp: new Date()
         }
 
@@ -172,23 +171,7 @@ function App() {
                 <div key={index} className={`message ${message.type}`}>
                   <div className="message-bubble">
                     <div className="message-content">{message.content}</div>
-                    {message.fund_sources && message.fund_sources.length > 0 && (
-                      <div className="message-sources">
-                        <div className="sources-title">📚 Sources:</div>
-                        {message.fund_sources.map((source, idx) => (
-                          <a 
-                            key={idx}
-                            href={source.url} 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                            className="source-link"
-                          >
-                            {source.fund_name}
-                          </a>
-                        ))}
-                      </div>
-                    )}
-                    {message.source && (
+                    {message.source && message.source !== 'none' && (
                       <div className="message-source">
                         Powered by {message.source}
                       </div>
@@ -216,14 +199,11 @@ function App() {
                 <button onClick={() => askQuickQuestion('What is the minimum SIP amount?')}>
                   💵 Minimum SIP
                 </button>
-                <button onClick={() => askQuickQuestion('Compare HDFC mid cap and small cap funds')}>
-                  📈 Compare Funds
-                </button>
                 <button onClick={() => askQuickQuestion('What is expense ratio?')}>
                   ❓ Expense Ratio
                 </button>
-                <button onClick={() => askQuickQuestion('Suggest a fund for 5 year investment')}>
-                  🎯 Investment Advice
+                <button onClick={() => askQuickQuestion('Tell me about HDFC Mid Cap Fund')}>
+                  📈 Mid Cap Fund
                 </button>
               </div>
             </div>
