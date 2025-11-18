@@ -8,7 +8,7 @@ export default defineConfig({
     port: 3000,
     proxy: {
       '/api': {
-        target: 'https://your-backend-url.com', // This will be replaced with your actual backend URL
+        target: 'https://indmoney-faq-api.onrender.com', // This will be your Render backend URL
         changeOrigin: true,
       }
     }
